@@ -40,7 +40,7 @@ What you need:
     - Activate it - `source aica/bin/activate`
 
 2. Install these packages
-    - `pip install pandas mysql-connector-python pycountry_convert`
+    - `pip install pandas mysql-connector-python pycountry_convert unidecode`
 
 3. Add mariaDB details to the export_tables config
 
