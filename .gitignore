@@ -1,0 +1,9 @@
+# don't commit personal data
+/csv
+/dump
+*.sql
+*.csv
+
+# or junk
+/myenv
+/aica
