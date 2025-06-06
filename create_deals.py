@@ -117,5 +117,5 @@ columns_to_drop = ['mandate_id', 'transaction_id', 'id_mandate', 'lead_id', 'tra
 final_merged = final_merged.drop(columns=[col for col in columns_to_drop if col in final_merged.columns])
 
 # save
-final_merged.to_csv("merged_cleaned.csv", index=False)
+final_merged.to_csv("deals_import.csv", index=False)
 print("Deals done!")
