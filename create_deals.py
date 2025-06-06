@@ -1,5 +1,5 @@
 import pandas as pd
-import csv
+import pycountry_convert as pc
 
 # float to str
 def clean_id(x):
@@ -77,10 +77,44 @@ for col in int_columns:
 if 'service' in final_merged.columns:
     final_merged['service'] = final_merged['service'].str.strip()
 
+# map deal values
+deal_values_mapping = {
+    '1-5': '<10',
+    '6-10': '<10',
+    '11-15': '10-20',
+    '16-20': '10-20',
+    '21-30': '20-30',
+    'More than 30': '30-50',
+}
+if 'estimatedValue' in final_merged.columns:
+    final_merged['estimatedValue'] = final_merged['estimatedValue'].map(deal_values_mapping).fillna(final_merged['estimatedValue'])
+
+# map regon column
+def get_region(country):
+    try:
+        country = country.strip()
+        country_code = pc.country_name_to_country_alpha2(country)
+        continent_code = pc.country_alpha2_to_continent_code(country_code)
+        return {
+            'EU': 'EMEA',
+            'AS': 'Asia',
+            'AF': 'EMEA',
+            'NA': 'Americas',
+            'SA': 'Americas',
+            'OC': 'Asia',
+        }.get(continent_code, '')
+    except:
+        return ''
+
+if 'country' in final_merged.columns:
+    final_merged['region'] = final_merged['country'].apply(get_region)
+
 #add key
 final_merged.insert(0, 'unique_id', range(1, len(final_merged) + 1))
 
 # remove pointless columns
+columns_to_drop = ['mandate_id', 'transaction_id', 'id_mandate', 'lead_id', 'transaction_id_mandate', 'id_transaction', 'lead_id_transaction', 'mandate_id_transaction', 'isActive_transaction']
+final_merged = final_merged.drop(columns=[col for col in columns_to_drop if col in final_merged.columns])
 
 # save
 final_merged.to_csv("merged_cleaned.csv", index=False)
