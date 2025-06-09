@@ -54,6 +54,7 @@ media_dict = pd.Series(media_df['filepath'].values, index=media_df['id'].astype(
 
 # map id's (check column existence)
 for col, mapping_dict in [('memberFirm_id', firms_dict), 
+                          ('otherMembers', firms_dict),
                           ('dealTeamLead_id', members_dict), 
                           ('logoA_id', media_dict), 
                           ('logoB_id', media_dict)]:
@@ -113,7 +114,7 @@ if 'country' in final_merged.columns:
 final_merged.insert(0, 'unique_id', range(1, len(final_merged) + 1))
 
 # remove pointless columns
-columns_to_drop = ['mandate_id', 'transaction_id', 'id_mandate', 'lead_id', 'transaction_id_mandate', 'id_transaction', 'lead_id_transaction', 'mandate_id_transaction', 'isActive_transaction']
+columns_to_drop = ['mandate_id', 'transaction_id', 'id_mandate', 'lead_id', 'transaction_id_mandate', 'id_transaction', 'lead_id_transaction', 'mandate_id_transaction', 'isActive_transaction', 'otherMember']
 final_merged = final_merged.drop(columns=[col for col in columns_to_drop if col in final_merged.columns])
 
 # save
