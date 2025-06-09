@@ -13,6 +13,11 @@ leads_df = pd.read_csv("csv/leads.csv")
 mandates_df = pd.read_csv("csv/mandates.csv")
 transactions_df = pd.read_csv("csv/transactions.csv")
 
+# add deal stage
+leads_df['dealStage_lead'] = 1
+mandates_df['dealStage_mandate'] = 1
+transactions_df['dealStage_transaction'] = 1
+
 # mandates without lead id are pointless drop them
 mandates_df = mandates_df[mandates_df['lead_id'].notna() & (mandates_df['lead_id'] != '')]
 
@@ -31,14 +36,13 @@ final_merged = pd.concat([merged_2, transactions_without_lead], ignore_index=Tru
 
 # add dealstage column
 def determine_deal_stage(row):
-    if pd.isna(row.get('id')):
+    if pd.notna(row.get('dealStage_transaction')):
         return 'closed transaction'
-    elif pd.notna(row.get('transaction_id')) or pd.notna(row.get('id_transaction')):
-        return 'closed transaction'
-    elif pd.notna(row.get('engagedStartDate')):
+    elif pd.notna(row.get('dealStage_mandate')):
         return 'active mandate'
-    else:
+    elif pd.notna(row.get('dealStage_lead')):
         return 'lead'
+    return ''
 
 final_merged['dealStage'] = final_merged.apply(determine_deal_stage, axis=1)
 
@@ -114,7 +118,7 @@ if 'country' in final_merged.columns:
 final_merged.insert(0, 'unique_id', range(1, len(final_merged) + 1))
 
 # remove pointless columns
-columns_to_drop = ['mandate_id', 'transaction_id', 'id_mandate', 'lead_id', 'transaction_id_mandate', 'id_transaction', 'lead_id_transaction', 'mandate_id_transaction', 'isActive_transaction', 'otherMember']
+columns_to_drop = ['mandate_id', 'transaction_id', 'id_mandate', 'lead_id', 'transaction_id_mandate', 'id_transaction', 'lead_id_transaction', 'mandate_id_transaction', 'isActive_transaction', 'otherMember', 'dealStage_lead', 'dealStage_mandate', 'dealStage_transaction']
 final_merged = final_merged.drop(columns=[col for col in columns_to_drop if col in final_merged.columns])
 
 # save
