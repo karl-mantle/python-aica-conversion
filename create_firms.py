@@ -1,4 +1,6 @@
 import pandas as pd
+import re
+import unidecode
 
 # float to str
 def clean_id(x):
@@ -6,6 +8,17 @@ def clean_id(x):
         return str(int(float(x)))
     except:
         return ''
+
+# username for designated member field
+def create_username(row):
+    fullname = str(row.get('fullname', '')).strip().lower()
+    ascii_name = unidecode.unidecode(fullname)
+    dotted = ascii_name.replace(' ', '.')
+    username = re.sub(r'[^a-z0-9\.]', '', dotted)
+    username = re.sub(r'\.+', '.', username)
+    username = username.strip('.')
+    
+    return username
 
 # load the member csv
 firms_df = pd.read_csv("csv/firms.csv")
@@ -33,6 +46,10 @@ base_url = "https://aicanetwork.com/crm/"
 for col in ['photo_id']:
     if col in firms_df.columns:
         firms_df[col] = firms_df[col].apply(lambda x: base_url + x if x else x)
+
+for col in ['designatedMember_id']:
+    if col in firms_df.columns:
+        firms_df['designatedMember_id'] = firms_df['designatedMember_id'].apply(create_username)
 
 #add key
 firms_df.insert(0, 'unique_id', range(1, len(firms_df) + 1))
