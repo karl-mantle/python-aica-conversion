@@ -10,15 +10,13 @@ def clean_id(x):
         return ''
 
 # username for designated member field
-def create_username(row):
-    fullname = str(row.get('fullname', '')).strip().lower()
+def create_username(fullname):
+    fullname = str(fullname).strip().lower()
     ascii_name = unidecode.unidecode(fullname)
     dotted = ascii_name.replace(' ', '.')
     username = re.sub(r'[^a-z0-9\.]', '', dotted)
     username = re.sub(r'\.+', '.', username)
-    username = username.strip('.')
-    
-    return username
+    return username.strip('.')
 
 # load the member csv
 firms_df = pd.read_csv("csv/firms.csv")
