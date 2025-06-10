@@ -114,6 +114,47 @@ def get_region(country):
 if 'country' in final_merged.columns:
     final_merged['region'] = final_merged['country'].apply(get_region)
 
+# confidential
+final_merged['visibility'] = final_merged['confidential'].apply(lambda x: 'public' if x == 1 else 'hidden')
+
+# client name
+def get_client_name(row):
+    return row['nameA'] if pd.notna(row.get('nameA')) and row['nameA'] != '' else row.get('prospectName', '')
+
+final_merged['clientName'] = final_merged.apply(get_client_name, axis=1)
+
+# post title
+def get_post_title_if_blank(row):
+    def safe_str(x):
+        if pd.isna(x):
+            return ''
+        return str(x).strip()
+    
+    projectName = safe_str(row.get('projectName', ''))
+    nameA = safe_str(row.get('nameA', ''))
+    nameB = safe_str(row.get('nameB', ''))
+    tombstone = safe_str(row.get('tombstone', ''))
+    
+    if projectName != '':
+        return projectName
+    else:
+        parts = [part for part in [nameA, tombstone, nameB] if part != '']
+        return ' '.join(parts)
+
+final_merged['post_title'] = final_merged.apply(get_post_title_if_blank, axis=1)
+
+# add published date
+def determine_published_date(row):
+    if pd.notna(row.get('completedDate')):
+        return row.get('completedDate')
+    elif pd.notna(row.get('engagedStartDate')):
+        return row.get('engagedStartDate')
+    elif pd.notna(row.get('projectStartDate')):
+        return row.get('projectStartDate')
+    return '1970-01-01'
+
+final_merged['publishedDate'] = final_merged.apply(determine_published_date, axis=1)
+
 #add key
 final_merged.insert(0, 'unique_id', range(1, len(final_merged) + 1))
 
