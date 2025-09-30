@@ -1,5 +1,6 @@
 # don't commit personal data
 /csv
+/old_csv
 /dump
 *.sql
 *.csv
@@ -7,3 +8,4 @@
 # or junk
 /myenv
 /aica
+/tools

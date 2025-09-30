@@ -31,12 +31,28 @@ for col, mapping_dict in [('firm_id', firms_dict),
     if col in members_df.columns:
         members_df[col] = members_df[col].apply(clean_id).map(mapping_dict).fillna('')
 
+# map sector terms
+sector_terms_mapping = {
+    'Business_Services': 'Business Services',
+    'Financial_Services': 'Financial Services',
+    'Industrials': 'Industrials and Manufacturing',
+    'Technology': 'Technology, Media & Telecoms',
+    'Consumer Products': 'Consumer and Retail',
+    'Retail': 'Consumer and Retail',
+}
+if 'sector_id' in members_df.columns:
+    members_df['sector_id'] = members_df['sector_id'].map(sector_terms_mapping).fillna(members_df['sector_id'])
+if 'sector2_id' in members_df.columns:
+    members_df['sector2_id'] = members_df['sector2_id'].map(sector_terms_mapping).fillna(members_df['sector2_id'])
+if 'sector3_id' in members_df.columns:
+    members_df['sector3_id'] = members_df['sector3_id'].map(sector_terms_mapping).fillna(members_df['sector3_id'])
+
 # sectors into single "sectors" column
 sector_cols = ['sector_id', 'sector2_id', 'sector3_id']
 members_df['sectors'] = members_df[sector_cols] \
     .fillna('') \
     .astype(str) \
-    .apply(lambda row: ', '.join(filter(None, [s.strip() for s in row])), axis=1)
+    .apply(lambda row: '|'.join(filter(None, [s.strip() for s in row])), axis=1)
 
 #add base url for profile picture
 base_url = "https://aicanetwork.com/crm/"

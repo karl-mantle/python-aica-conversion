@@ -1,56 +1,78 @@
 # python-aica-conversion
 
-To future me
+## Requirements
 
-## Reqs
-
-What you need:
 - Windows/WSL2 (Ubuntu)
 - Python3 (already installed probably but check)
 - MariaDB
 
 ## Load Database
 
-1. Install MariaDB if you deleted it
-    - `sudo apt install mariadb-server -y`
+1. **Install MariaDB**
 
-2. Start service
-    - `sudo service mysql start`
+   ```bash
+   sudo apt install mariadb-server -y
+   ```
 
-3. Start MariaDB shell
-    - `sudo mariadb`
+2. **Start service**
 
-4. Make an empty database to hold the .sql dump
-    - `CREATE DATABASE aicanetwork_latest;`
-    - `EXIT;`
+   ```bash
+   sudo service mysql start
+   ```
 
-5. Import the dump to that database
-    - `sudo mariadb aicanetwork_latest < /dumps/dump.sql`
+3. **Open MariaDB shell**
 
-6. Now the dump is in the DB
+   ```bash
+   sudo mariadb
+   ```
+
+4. **Create a new database for the SQL dump**
+
+   ```sql
+   CREATE DATABASE aicanetwork_latest;
+   EXIT;
+   ```
+
+5. **Import the SQL dump**
+
+   ```bash
+   sudo mariadb aicanetwork_latest < /dumps/dump.sql
+   ```
+
+6. Database is now ready.
 
 ## Dump tables to CSVs
 
-1. Python is preinstalled unless you removed it so you should make a virtual env to not interfere with the system packages
+1. **Set up a Python virtual environment**
 
-    - `python3 -m venv aica`
+   ```bash
+   python3 -m venv aica
+   source aica/bin/activate
+   ```
 
-    - You might have to install venv again
-    
-    - Activate it - `source aica/bin/activate`
+2. **Install required Python packages**
 
-2. Install these packages
-    - `pip install pandas mysql-connector-python pycountry_convert unidecode`
+   ```bash
+   pip install pandas mysql-connector-python pycountry_convert unidecode
+   ```
 
-3. Add mariaDB details to the export_tables config
+3. **Add MariaDB connection details to** `export_tables.py`
 
-4. Run the script
-    - `python3 export_tables.py`
+4. **Run the export script**
 
-5. Now there's a tonne of CSVs in `csvs` to transform
+   ```bash
+   python3 export_tables.py
+   ```
 
-## Create CSVs
+5. Now there's a tonne of CSVs in `csvs`
 
-1. There's a script for each post-type that will create a CSV ready to import via WP All Import
+## Create CSVs for WP All Import
 
-2. Run them
+1. There's a script for each post-type that will turn raw CSVs into a WP All Import-ready CSVs.
+
+2. Run them all
+   ```bash
+   python3 create_deals.py
+   python3 create_firms.py
+   python3 create_members.py
+   ```
